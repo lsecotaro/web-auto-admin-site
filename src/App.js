@@ -6,7 +6,7 @@ import BackDrop from "./components/backdrop/backdrop";
 
 class App extends Component {
     state = {
-        baseUrl: "https://svc-backend.herokuapp.com/",
+        baseUrl: "https://svc-backend.herokuapp.com/v1/products",
         sideDrawerOpen: false,
         products: [],
         items: []
@@ -39,7 +39,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        fetch(this.state.baseUrl + '/product')
+        fetch(this.state.baseUrl)
             .then(res => res.json())
             .then((data) => {
                 this.setState({ products: data })
