@@ -17,7 +17,7 @@ import Dashboard from "./components/dashboard";
 
 class App extends Component {
     state = {
-        backendBaseUrl: "http://127.0.0.1:8080/", //"https://svc-backend.herokuapp.com/",
+        backendBaseUrl: "https://svc-backend.herokuapp.com/", //"http://127.0.0.1:8080/"
         sideDrawerOpen: false,
         items: []
     };
