@@ -1,6 +1,11 @@
 import React from "react";
+import {
+    Link
+} from "react-router-dom";
+
 import './toolbar.css';
 import DrawerToggleButton from "../sidedrawer/drawerToggleButton";
+import ProductMenu from "../product/productMenu";
 
 const Toolbar = props => (
   <header className="toolbar">
@@ -8,14 +13,14 @@ const Toolbar = props => (
           <div className="toolbar_toggle-button">
               <DrawerToggleButton click={props.drawerClickHandler}/>
           </div>
-          <div className="toolbar_logo"> <a href="/"> THE LOGO</a></div>
+          <div className="toolbar_logo"> <Link to={"/"}> THE LOGO</Link></div>
           <div className="spacer"/>
           <div className="toolbar_navegation-items">
               <ul>
-                  {props.items.map((item) => (
-                      <li><a href="/">{item.name}</a></li>
-                  ))}
+                  <li><Link to={"/product-form"}>Administrar</Link></li>
+                  <ProductMenu items={props.items} backendBaseUrl={props.backendBaseUrl}/>
               </ul>
+
           </div>
       </nav>
   </header>

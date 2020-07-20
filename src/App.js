@@ -1,14 +1,24 @@
 import React, {Component} from 'react';
-import Products from './components/products';
+import ProductList from './components/product/productList';
 import Toolbar from "./components/toolbar/toolbar";
 import SideDrawer from "./components/sidedrawer/sidedrawer";
 import BackDrop from "./components/backdrop/backdrop";
+import Home from "./Home.js";
+import ProductDetail from "./components/product/productDetail.js";
+
+
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom";
+import Dashboard from "./components/dashboard";
+
 
 class App extends Component {
     state = {
-        baseUrl: "https://svc-backend.herokuapp.com/v1/products",
+        backendBaseUrl: "http://127.0.0.1:8080/", //"https://svc-backend.herokuapp.com/",
         sideDrawerOpen: false,
-        products: [],
         items: []
     };
 
@@ -30,28 +40,34 @@ class App extends Component {
         }
         return (
             <div style={{height:'100%'}}>
-                <Toolbar items={this.state.items} drawerClickHandler={this.drawerToggleClickHandler}/>
-                <SideDrawer items={this.state.items} show={this.state.sideDrawerOpen}/>
-                {backdrop}
-                <Products products={this.state.products}  />
+                <Router>
+                    <Toolbar items={this.state.items} drawerClickHandler={this.drawerToggleClickHandler} backendBaseUrl={this.state.backendBaseUrl}/>
+                    <SideDrawer items={this.state.items} show={this.state.sideDrawerOpen}/>
+                    {backdrop}
+                    <Home/>
+                    <Switch>
+                        <Route path={"/"} exact component={Home} />
+                        <Route path={"/product-list/:id"} render={(props) => (
+                            <ProductList {...props} baseUrl={this.state.backendBaseUrl} />
+                        )} />
+                        <Route path={"/product-form"} render = {(props) => (
+                            <Dashboard {...props} backendBaseUrl = {this.state.backendBaseUrl} />
+                        )} />
+                        <Route path={"/product-detail:id"} component={ProductDetail} />
+                    </Switch>
+                </Router>
             </div>
         );
     }
 
     componentDidMount() {
-        fetch(this.state.baseUrl)
-            .then(res => res.json())
-            .then((data) => {
-                this.setState({ products: data })
-            })
-            .catch(console.log)
-
-        fetch(this.state.baseUrl + '/menu')
+        fetch(this.state.backendBaseUrl + 'v1/menu/menu')
             .then(res => res.json())
             .then((data) => {
                 this.setState({ items: data.items })
             })
             .catch(console.log)
+        console.log(this.state.items);
     }
 
 }
