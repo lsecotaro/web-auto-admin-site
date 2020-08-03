@@ -30,7 +30,7 @@ class ProductMenu extends Component{
 
         if(this.state.categories.length > 0){
             mnu = this.state.categories.map((category) => (
-                <li><Link to={`/product-list/${category.name}`}>{category.name}</Link></li>
+                <li key={category.id}><Link to={`/product-list/${category.name}`}>{category.name}</Link></li>
             ));
         }
 

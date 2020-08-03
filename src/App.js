@@ -17,7 +17,7 @@ import Dashboard from "./components/dashboard";
 
 class App extends Component {
     state = {
-        backendBaseUrl: "https://svc-backend.herokuapp.com/", //"http://127.0.0.1:8080/"
+        backendBaseUrl:"https://svc-backend.herokuapp.com/", //"http://127.0.0.1:8080/",
         sideDrawerOpen: false,
         items: []
     };
@@ -42,13 +42,13 @@ class App extends Component {
             <div style={{height:'100%'}}>
                 <Router>
                     <Toolbar items={this.state.items} drawerClickHandler={this.drawerToggleClickHandler} backendBaseUrl={this.state.backendBaseUrl}/>
-                    <SideDrawer items={this.state.items} show={this.state.sideDrawerOpen}/>
+                    <SideDrawer items={this.state.items} show={this.state.sideDrawerOpen} backendBaseUrl={this.state.backendBaseUrl}/>
                     {backdrop}
                     <Home/>
                     <Switch>
                         <Route path={"/"} exact component={Home} />
                         <Route path={"/product-list/:id"} render={(props) => (
-                            <ProductList {...props} baseUrl={this.state.backendBaseUrl} />
+                            <ProductList {...props} backendBaseUrl={this.state.backendBaseUrl} />
                         )} />
                         <Route path={"/product-form"} render = {(props) => (
                             <Dashboard {...props} backendBaseUrl = {this.state.backendBaseUrl} />
@@ -67,7 +67,6 @@ class App extends Component {
                 this.setState({ items: data.items })
             })
             .catch(console.log)
-        console.log(this.state.items);
     }
 
 }

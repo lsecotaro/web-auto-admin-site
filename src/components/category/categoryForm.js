@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios'
 
 class CategoryForm extends React.Component {
     constructor(props){
@@ -7,18 +8,22 @@ class CategoryForm extends React.Component {
         this.state = {
             categories: [],
             categoryName:"",
-            backendBaseUrl: props.backendBaseUrl
+            backendBaseUrl: props.backendBaseUrl,
+            selectedCategoryId: "0"
         };
 
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.onRemove = this.onRemove.bind(this);
     }
 
     componentDidMount() {
         fetch(this.state.backendBaseUrl + "v1/categories", {
+            credentials: 'same-origin',
             headers : {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'CSRF-Token': 'token'
             }
         })
             .then(res => res.json())
@@ -38,64 +43,60 @@ class CategoryForm extends React.Component {
     }
 
     handleSubmit(event) {
+        console.log("onSummit");
+        console.log(this.state);
         const cat = {};
         cat.name = this.state.categoryName;
         cat.active = true;
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(cat),
-            redirect: 'follow'
-        };
-        console.log(requestOptions);
-        fetch(this.state.backendBaseUrl + "v1/categories", requestOptions)
-            .then(async response => {
-                const data = await response.json();
+        if(cat.name === ""){
+            event.preventDefault();
+            return;
+        }
 
-                // check for error response
-                if (!response.ok) {
-                    // get error message from body or default to response status
-                    const error = (data && data.message) || response.status;
-                    return Promise.reject(error);
-                }
-
+        axios
+            .post(this.state.backendBaseUrl + "v1/categories", cat)
+            .then(response => {
+                console.log(response);
                 this.setState(state => {
+                    console.log(state);
                     const categories = state.categories.push(cat);
                     return {
                         categories,
+                        categoryName:"",
+                        selectedCategoryId: "0"
+                    }
+                })
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    onRemove(event){
+        console.log("onRemove");
+        const categoryId = this.state.selectedCategoryId;
+        if(categoryId === "0"){
+            event.preventDefault();
+            return;
+        }
+        axios
+            .delete(this.state.backendBaseUrl + "v1/categories/" + categoryId)
+            .then(response => {
+                console.log(response);
+                this.setState(state => {
+                    console.log(state);
+                    return {
                         categoryName:""
                     }
                 })
             })
             .catch(error => {
-                this.setState({ errorMessage: error.toString() });
-                console.error('There was an error!', error);
-            });
+                console.log(error)
+            })
+        alert("categoria eliminada")
 
-
-
-            // .then(response => response.json())
-            // .then(cat => this.setState(state => {
-            //     const categories = state.categories.push(cat);
-            //     return {
-            //         categories,
-            //         categoryName:""
-            //     }
-            // }))
-            // .catch(console.log);
-
-        // this.setState(state => {
-        //     const categories = state.categories.push(cat);
-        //     return {
-        //         categories,
-        //         categoryName:""
-        //     }
-        // });
-        //
-        // alert('Submitted: ' + JSON.stringify(this.state));
-        event.preventDefault();
+        // event.preventDefault();
     }
-
 
     render(){
         const { categories } = this.state;
@@ -112,9 +113,11 @@ class CategoryForm extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Categorías:
-                        <select>
+                        <select name="selectedCategoryId" onChange={this.handleInputChange}>
+                            <option key={-1} value={0}>Sin Categoria</option>
                             {categoriesList}
                         </select>
+                        <button name="btnRemove" onClick={this.onRemove}>Eliminar</button>
                     </label>
                     <br/>
                     <label>
@@ -126,8 +129,9 @@ class CategoryForm extends React.Component {
                         />
                     </label>
                     <br/>
-                    <input type="submit" value="Submit" />
+                    <input type="submit" value="Agregar" />
                 </form>
+                <br/>
             </div>
         );
     }

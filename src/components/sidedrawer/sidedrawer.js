@@ -1,5 +1,6 @@
 import React from 'react';
 import './sidedrawer.css';
+import ProductMenu from "../product/productMenu";
 
 const SideDrawer = props => {
     let drawerClasses = 'side-drawer';
@@ -10,9 +11,7 @@ const SideDrawer = props => {
     return (
         <nav className={drawerClasses}>
             <ul>
-                {props.items.map((item) => (
-                    <li><a href="/">{item.name}</a></li>
-                ))}
+                <ProductMenu backendBaseUrl={props.backendBaseUrl}/>
             </ul>
         </nav>
     );

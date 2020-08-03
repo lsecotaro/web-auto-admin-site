@@ -4,32 +4,52 @@ class ProductList extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            baseUrl: props.backendBaseUrl,
-            products: []
+            backendBaseUrl: props.backendBaseUrl,
+            products: [],
+            categoryName: props.match.params.id
         };
     }
+    componentWillReceiveProps(nextProps) {
+        this.setState({categoryName:nextProps.match.params.id});
+
+        if(nextProps.match.params.id !== this.props.match.params.id) {
+            this.fetchData(this.state.backendBaseUrl + "v1/products/" + nextProps.match.params.id);
+        }
+    }
+
     componentDidMount() {
-        fetch(this.state.backendBaseUrl)
+        this.fetchData(this.state.backendBaseUrl + "v1/products/" + this.props.match.params.id)
+    }
+
+    fetchData(url){
+        fetch(url)
             .then(res => res.json())
             .then((data) => {
-                this.setState({ products: data })
+                this.setState({products: data})
             })
             .catch(console.log)
     }
 
     render() {
-        return (
-            <div>
-                <center><h1>{this.props.match.params.id}</h1></center>
-                {this.state.products.map((product) => (
-                    <div className="card">
+        const { products } = this.state;
+
+        let productList = products.length > 0
+            && products.map((product, i) => {
+                return (
+                    <div className="card" key={product.id}>
                         <div className="card-body">
                             <h5 className="card-title">{product.title}</h5>
                             <h6 className="card-subtitle mb-2 text-muted">{product.price}</h6>
                             <p className="card-text">{product.description}</p>
                         </div>
                     </div>
-                ))}
+                )
+            }, this);
+
+        return (
+            <div>
+                <h1>{this.state.categoryName}</h1>
+                {productList}
             </div>
         )
     }
